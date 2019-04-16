@@ -57,7 +57,7 @@ in the environment {x -> 3}?
                      ⇒ 8                   (R_+)
 
    Again, we've labeled each line with the number of the equation that
-   was used from the set of equations in Figure 19.1. 
+   was used from the set of equations in Figure 19.1.
    You should do that too. *)
 
 (*....................................................................
@@ -83,18 +83,40 @@ help and to check your answers. *)
 Exercise 4. Carry out the derivation for the semantics of the
 expression x * x in the environment mapping x to 6, following the
 rules in Figure 19.1.
+
+{x -> 6} ⊢ (x * x) ⇒
+                   | {x -> 6} ⊢ x ⇒ 6
+                   | {x -> 6} ⊢ x ⇒ 6
+                   36
 ....................................................................*)
 
 (*....................................................................
 Exercise 5. Carry out the derivation for the semantics of the
 expression x - 2 in the environment mapping x to 8, following the
 rules in Figure 19.1.
+
+{x -> 8} ⊢ (x * x) ⇒
+                   | {x -> 8} ⊢ x ⇒ 8
+                   | {x -> 8} ⊢ 2 ⇒ 2
+                   6
 ....................................................................*)
 
 (*....................................................................
 Exercise 6. Carry out the derivation for the semantics of the
 expression (fun x -> x * x) (x - 2) in the environment mapping
 x to 8, following the rules in Figure 19.1.
+
+{x -> 8} ⊢ (fun x -> x * x) (x - 2) ⇒
+                                    | {x -> 8} ⊢ (fun x -> x * x)
+                                    | {x -> 8} ⊢ (x - 2) ⇒
+                                                         | {x -> 8} ⊢ x ⇒ 8
+                                                         | {x -> 8} ⊢ 2 ⇒ 2
+                                                         6
+                                    | {x -> 6} ⊢ x * x ⇒
+                                                       |{x -> 6} ⊢ x ⇒ 6
+                                                       |{x -> 6} ⊢ x ⇒ 6
+                                                       36
+                                    36
 ....................................................................*)
 
 (*....................................................................
@@ -104,6 +126,24 @@ expression
     let x = 3 + 5 in (fun x -> x * x) (x - 2)
 
 in the empty environment.
+
+{} ⊢ let x = 3 + 5 in (fun x -> x * x) (x - 2) ⇒
+                                               | {} ⊢ 3 + 5 ⇒
+                                                            | {} ⊢ 3 ⇒ 3
+                                                            | {} ⊢ 5 ⇒ 5
+                                                            8
+                                               | {x -> 8} ⊢ (fun x -> x * x) (x - 2) ⇒
+                                                                                   | {x -> 8} ⊢ (fun x -> x * x)
+                                                                                   | {x -> 8} ⊢ (x - 2) ⇒
+                                                                                                        | {x -> 8} ⊢ x ⇒ 8
+                                                                                                        | {x -> 8} ⊢ 2 ⇒ 2
+                                                                                                        6
+                                                                                   | {x -> 6} ⊢ x * x ⇒
+                                                                                                      |{x -> 6} ⊢ x ⇒ 6
+                                                                                                      |{x -> 6} ⊢ x ⇒ 6
+                                                                                                      36
+                                                                                   36
+                                               36
 ....................................................................*)
 
 (*====================================================================
@@ -121,11 +161,43 @@ initially empty environment.
 
 1. 2 * 25
 
+{} ⊢ 2 * 25 ⇒
+            | {} ⊢ 2 ⇒ 2
+            | {} ⊢ 25 ⇒ 25
+            50
+
 2. let x = 2 * 25 in x + 1
+
+{} ⊢ let x = 2 * 25 in x + 1 ⇒
+                             | {} ⊢ 2 * 25 ⇒ 50
+                             | {x -> 50} ⊢ x + 1 ⇒
+                                                 | {x -> 50} ⊢ x ⇒ 50
+                                                 | {x -> 50} ⊢ 1 ⇒ 1
+                                                 51
+                             51
+
 
 3. let x = 2 in x * x
 
+{} ⊢ let x = 2 in x * x ⇒
+                         | {} ⊢ 2 ⇒ 2
+                         | {x -> 2} ⊢ x * x ⇒
+                                             | {x -> 2} ⊢ x ⇒ 2
+                                             | {x -> 2} ⊢ x ⇒ 2
+                                             4
+                         4
+
 4. let x = 51 in let x = 124 in x
+
+{} ⊢ let x = 51 in let x = 124 in x ⇒
+                                     | {} ⊢ 51 ⇒ 51
+                                     | {x -> 51} ⊢ let x = 124 in x ⇒
+                                                                     | {x -> 51} 124 ⇒ 124
+                                                                     | {x -> 124} ⊢ x ⇒ 124
+                                                                     124
+                                     124
+
+
 ....................................................................*)
 
 (*....................................................................
@@ -134,6 +206,32 @@ environment semantic rules in Figure 19.1. Use an initially empty
 environment.
 
 let x = 2 in let f = fun y -> x + y in let x = 8 in f x
+
+{} ⊢ let x = 2 in
+      let f = fun y -> x + y in
+      let x = 8 in f x ⇒
+                       | {} ⊢ 2 ⇒ 2
+                       | {x -> 2} ⊢ let f = fun y -> x + y in
+                                      let x = 8 in f x ⇒
+                                                       | {x -> 2} ⊢ fun y -> x + y ⇒ fun y -> x + y
+                                                       | {x -> 2} ⊢ let x = 8 in f x ⇒
+                                                                                     | {x -> 2} ⊢ 8 ⇒ 8
+                                                                                     | {x -> 8} ⊢ f x ⇒
+                                                                                                    | {x -> 8} ⊢ f ⇒ fun y -> x + y
+                                                                                                    | {x -> 8} ⊢ x + y ⇒
+                                                                                                                        | {x -> 8} ⊢ x ⇒ 8
+                                                                                                                        | {x -> 8} ⊢ y ⇒ y
+                                                                                                                        8 + y
+                                                                                                    | {x -> 8}{y -> 8} ⊢ 8 + y ⇒
+                                                                                                                               | {x -> 8}{y -> 8} ⊢ 8 ⇒ 8
+                                                                                                                               | {x -> 8}{y -> 8} ⊢ y ⇒ 8
+                                                                                                                               16
+                                                                                                    16
+                                                                                      16
+                                                        16
+                        16
+
+
 ....................................................................*)
 
 
@@ -151,7 +249,6 @@ evaluated in an initially empty environment.
 2. let f = fun y -> y + y in f 10
 
 3. let x = 2 in let f = fun y -> x + y in f 8
-
 ....................................................................*)
 
 (*....................................................................
@@ -216,4 +313,3 @@ Not_found exception if the variable has no value in the environment.
 
 let lookup (x : varid) (e : env) : value =
   failwith "lookup not implemented" ;;
-
